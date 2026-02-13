@@ -9,7 +9,7 @@ import java.util.List;
 
 public enum MusicType {
     ORIGINAL(0, "オリジナル"),
-    THERE_D_MV(1, "3DMV"),
+    THREE_D_MV(1, "3DMV"),
     TWO_D_MV(2, "2DMV");
 
     private final int code;
@@ -40,7 +40,7 @@ public enum MusicType {
                 "Bad Request",
                 List.of(new ErrorDetails(
                         "MusicType",
-                        "Invalid MusicType :" + code
+                        "Invalid MusicType: " + code
                 ))
         );
     }

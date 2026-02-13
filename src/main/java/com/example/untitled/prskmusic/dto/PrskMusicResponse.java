@@ -51,7 +51,7 @@ public class PrskMusicResponse {
 
     public static PrskMusicResponse from(PrskMusic prskMusic) {
         Artist artist = prskMusic.getArtist();
-        Boolean isArtistDeleted = artist.isDeleted();
+        boolean isArtistDeleted = artist.isDeleted();
 
         return new PrskMusicResponse(
                 prskMusic.getId(),

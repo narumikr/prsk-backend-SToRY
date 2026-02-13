@@ -35,7 +35,7 @@ public class OptionalPrskMusicRequest {
     private String lyricsName;
 
     /** 作曲者名 **/
-    @Size(message = "作曲者名は50文字以内で入力してください。 - Please enter the music name within 50 characters.")
+    @Size(max = 50, message = "作曲者名は50文字以内で入力してください。 - Please enter the music name within 50 characters.")
     private String musicName;
 
     /** ゲストメンバー **/

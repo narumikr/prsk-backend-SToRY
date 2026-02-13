@@ -115,7 +115,7 @@ public class PrskMusicService {
 
     public void deletePrskMusic(Long id) {
         PrskMusic prskMusic = prskMusicRepository.findByIdAndIsDeleted(id, false)
-                .orElseThrow(() -> new EntityNotFoundException("prsk music not found for id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Prsk music not found for id: " + id));
 
         prskMusic.setDeleted(true);
         prskMusicRepository.save(prskMusic);

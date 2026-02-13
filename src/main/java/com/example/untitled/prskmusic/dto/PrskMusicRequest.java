@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * プロセカ楽曲マスタAPIリスエスト for POST
+ * プロセカ楽曲マスタAPIリクエスト for POST
  */
 @Getter
 @Setter
@@ -39,7 +39,7 @@ public class PrskMusicRequest {
     private String lyricsName;
 
     /** 作曲者名 **/
-    @Size(message = "作曲者名は50文字以内で入力してください。 - Please enter the music name within 50 characters.")
+    @Size(max = 50, message = "作曲者名は50文字以内で入力してください。 - Please enter the music name within 50 characters.")
     private String musicName;
 
     /** ゲストメンバー **/
