@@ -62,7 +62,7 @@ public class PrskMusicController {
     // Delete /prsk-music/{id} : プロセカ楽曲情報の削除 - Delete prsk music information
     @DeleteMapping("/{id}")
     public ResponseEntity deletePrskMusic(
-            @PathVariable Long id
+            @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id
     ) {
         prskMusicService.deletePrskMusic(id);
         return ResponseEntity.noContent().build();

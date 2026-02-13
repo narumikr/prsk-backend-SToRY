@@ -98,11 +98,13 @@ public class PrskMusicService {
                     });
         }
 
-        Artist artist = artistRepository.findByIdAndIsDeleted(reqDto.getArtistId(), false)
-                .orElseThrow(() -> new EntityNotFoundException("Artist not found for id: " + reqDto.getArtistId()));
+        Artist artist = reqDto.getArtistId() != null
+                ? artistRepository.findByIdAndIsDeleted(reqDto.getArtistId(), false)
+                    .orElseThrow(() -> new EntityNotFoundException("Artist not found for id: " + reqDto.getArtistId()))
+                : null;
 
         updateIfNotNull(reqDto.getTitle(), prskMusic::setTitle);
-        prskMusic.setArtist(artist);
+        updateIfNotNull(artist, prskMusic::setArtist);
         updateIfNotNull(reqDto.getMusicType(), prskMusic::setMusicType);
         updateIfNotNull(reqDto.getSpecially(), prskMusic::setSpecially);
         updateIfNotNull(reqDto.getLyricsName(), prskMusic::setLyricsName);
