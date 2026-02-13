@@ -44,14 +44,4 @@ public enum MusicType {
                 ))
         );
     }
-    /**
-     * MusicType[] types = values();
-     *
-     * for (int i = 0; i < types.length; i++) {
-     *     MusicType type = types[i];
-     *     if (type.code == code) {
-     *         return type;
-     *     }
-     * }
-     */
 }
