@@ -33,4 +33,5 @@ out/
 /nbdist/
 /.nb-gradle/
 
-.claude/
+# Claude
+.claude/settings.local.json
