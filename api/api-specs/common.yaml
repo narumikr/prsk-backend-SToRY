@@ -91,7 +91,7 @@ components:
       properties:
         createdAt:
           type: string
-          format: date-format
+          format: date-time
           description: レコード作成日時 - Created date
           example: 2020-09-30T08:31:00Z
         createdBy:
@@ -100,7 +100,7 @@ components:
           example: 初音ミク
         updatedAt:
           type: string
-          format: date-format
+          format: date-time
           description: レコード更新日時 - Updated date
           example: 2025-09-06T08:15:00Z
         updatedBy:
