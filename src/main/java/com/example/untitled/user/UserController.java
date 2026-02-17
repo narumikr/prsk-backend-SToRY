@@ -61,7 +61,7 @@ public class UserController {
     // DELETE /users/{id} : ユーザー情報の削除 - Delete user information
     @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(
-            @PathVariable Long id
+            @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id
     ) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
