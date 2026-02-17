@@ -64,7 +64,7 @@ public class ArtistController {
     // DELETE /artists/{id} : アーティスト情報の削除 - Delete artist information
     @DeleteMapping("/{id}")
     public ResponseEntity deleteArtist(
-            @PathVariable Long id
+            @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id
     ) {
         artistService.deleteArtist(id);
         return ResponseEntity.noContent().build();
