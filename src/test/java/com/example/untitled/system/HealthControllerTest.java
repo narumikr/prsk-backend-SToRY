@@ -10,20 +10,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SystemController.class)
-public class SystemControllerTest {
+@WebMvcTest(HealthController.class)
+public class HealthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     /**
-     * GET /system/health : Response success
+     * GET /health : Response success
      */
     @Test
     public void healthCheckSuccess() throws Exception {
-        mockMvc.perform(get("/system/health")
+        mockMvc.perform(get("/health")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("hello"));
+                .andExpect(content().string("Hello SEKAI!"));
     }
 }

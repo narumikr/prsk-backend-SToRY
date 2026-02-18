@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/system")
-public class SystemController {
+@RequestMapping("/health")
+public class HealthController {
 
-    // GET /system/health : ヘルスチェック - Health check
-    @GetMapping("/health")
+    // GET /health : ヘルスチェック - Health check
+    @GetMapping
     public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.status(HttpStatus.OK).body("hello");
+        return ResponseEntity.status(HttpStatus.OK).body("Hello SEKAI!");
     }
 }
