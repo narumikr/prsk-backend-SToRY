@@ -14,14 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HealthControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
+    private MockMvc mvcMock;
     /**
      * GET /health : Response success
      */
     @Test
     public void healthCheckSuccess() throws Exception {
-        mockMvc.perform(get("/health")
+        mvcMock.perform(get("/health")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Hello SEKAI!"));

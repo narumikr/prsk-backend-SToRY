@@ -61,10 +61,10 @@
 
 ## 共通項目
 
-|  No.  | 論理名     | 物理名     | データ型      | Nullable |  PK   |  UK   |  FK   | デフォルト値      | 説明           |
-| :---: | ---------- | ---------- | ------------ | :------: | :---: | :---: | :---: | ----------------- | -------------- |
-|   1   | 作成日     | created_at | TIMESTAMPTZ  | NOT NULL |   -   |   -   |   -   | CURRENT_TIMESTAMP | レコード作成日 |
-|   2   | 作成者     | created_by | VARCHAR(20)  | NOT NULL |   -   |   -   |   -   | guest             | レコード作成者 |
-|   3   | 更新日     | updated_at | TIMESTAMPTZ  | NOT NULL |   -   |   -   |   -   | CURRENT_TIMESTAMP | レコード更新日 |
-|   4   | 更新者     | updated_by | VARCHAR(20)             | NOT NULL |   -   |   -   |   -   | guest             | レコード更新者 |
-|   5   | 削除フラグ | is_deleted | BOOLEAN                 | NOT NULL |   -   |   -   |   -   | FALSE             | 削除フラグ     |
+|  No.  | 論理名     | 物理名     | データ型    | Nullable |  PK   |  UK   |  FK   | デフォルト値      | 説明           |
+| :---: | ---------- | ---------- | ----------- | :------: | :---: | :---: | :---: | ----------------- | -------------- |
+|   1   | 作成日     | created_at | TIMESTAMPTZ | NOT NULL |   -   |   -   |   -   | CURRENT_TIMESTAMP | レコード作成日 |
+|   2   | 作成者     | created_by | VARCHAR(20) | NOT NULL |   -   |   -   |   -   | guest             | レコード作成者 |
+|   3   | 更新日     | updated_at | TIMESTAMPTZ | NOT NULL |   -   |   -   |   -   | CURRENT_TIMESTAMP | レコード更新日 |
+|   4   | 更新者     | updated_by | VARCHAR(20) | NOT NULL |   -   |   -   |   -   | guest             | レコード更新者 |
+|   5   | 削除フラグ | is_deleted | BOOLEAN     | NOT NULL |   -   |   -   |   -   | FALSE             | 削除フラグ     |
