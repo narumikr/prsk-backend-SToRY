@@ -129,7 +129,7 @@ def list_travel_plans(
 
 ### 破壊的変更と非破壊的変更
 
-#### 破壊的変更（Breakin Changes）
+#### 破壊的変更（Breaking Changes）
 
 既存クライアントが動作しなくなる変更。新しいメジャーバージョンが必要。
 
