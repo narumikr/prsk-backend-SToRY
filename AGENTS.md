@@ -39,19 +39,20 @@ description: Spring Boot を用いた RESTful API の設計・実装・コード
 
 ## コードパターン（このプロジェクト固有）
 
-| パターン              | 場所                                       | 用途                                       |
-| --------------------- | ------------------------------------------ | ------------------------------------------ |
-| `BaseEntity`          | `common/entity/BaseEntity.java`            | 全エンティティの基底（監査フィールド・軟削除） |
+| パターン                 | 場所                                           | 用途                                           |
+| ------------------------ | ---------------------------------------------- | ---------------------------------------------- |
+| `BaseEntity`             | `common/entity/BaseEntity.java`                | 全エンティティの基底（監査フィールド・軟削除） |
 | `GlobalExceptionHandler` | `common/exception/GlobalExceptionHandler.java` | 例外の一元処理（新しい例外クラスはここに追加） |
-| `EntityHelper`        | `common/util/EntityHelper.java`            | PATCH 系の部分更新ヘルパー                 |
-| `MetaInfo`            | `common/dto/MetaInfo.java`                 | ページネーション情報をレスポンスに含める   |
+| `EntityHelper`           | `common/util/EntityHelper.java`                | PATCH 系の部分更新ヘルパー                     |
+| `MetaInfo`               | `common/dto/MetaInfo.java`                     | ページネーション情報をレスポンスに含める       |
 
 ## テスト戦略
 
-| テスト種別       | 使用DB       | 実行タイミング         | 配置先              |
-| ---------------- | ------------ | ---------------------- | ------------------- |
-| ユニットテスト   | H2（インメモリ） | `./gradlew test`   | `src/test/java/.../` |
-| E2E テスト       | PostgreSQL（Docker） | CI または手動   | `src/test/java/.../e2e/` |
+| コマンド             | 説明                           | データベース        |
+| -------------------- | ------------------------------ | ------------------- |
+| `./gradlew testUnit` | ユニットテストのみ実行         | H2 (in-memory)      |
+| `./gradlew testE2e`  | E2Eテストのみ実行              | PostgreSQL (Docker) |
+| `./gradlew test`     | 全テスト実行（ユニット + E2E） | 両方                |
 
 - Controller テストは `@WebMvcTest` + Mockito でモックを使う
 - Service テストは `@ExtendWith(MockitoExtension.class)` でモックを使う
@@ -61,10 +62,10 @@ description: Spring Boot を用いた RESTful API の設計・実装・コード
 
 プロジェクトでは以下の Skills が利用可能です。必要に応じて参照してください。
 
-| Skill名                   | 説明                                | 使用場面                                                             |
-| ------------------------- | ----------------------------------- | -------------------------------------------------------------------- |
-| `api-design`              | RESTful API設計のベストプラクティス | エンドポイント設計・HTTP ステータスコード選定・OpenAPI 仕様レビュー |
-| `agent-design`            | AI Agent設計とワークフローパターン  | マルチエージェントシステムやワークフロー設計が必要な場面            |
-| `springboot-best-practices` | Spring Boot のベストプラクティス  | 新規実装・コードレビュー・JPA 設計・例外ハンドリング設計            |
+| Skill名                     | 説明                                | 使用場面                                                            |
+| --------------------------- | ----------------------------------- | ------------------------------------------------------------------- |
+| `api-design`                | RESTful API設計のベストプラクティス | エンドポイント設計・HTTP ステータスコード選定・OpenAPI 仕様レビュー |
+| `agent-design`              | AI Agent設計とワークフローパターン  | マルチエージェントシステムやワークフロー設計が必要な場面            |
+| `springboot-best-practices` | Spring Boot のベストプラクティス    | 新規実装・コードレビュー・JPA 設計・例外ハンドリング設計            |
 
 Skills は `.claude/skills/` に配置されています。
