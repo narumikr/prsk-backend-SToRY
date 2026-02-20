@@ -7,24 +7,20 @@ import com.example.untitled.artist.dto.OptionalArtistRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/artists")
 @Validated
 public class ArtistController {
 
     private final ArtistService artistService;
-
-    public ArtistController(ArtistService artistService) {
-        this.artistService = artistService;
-    }
 
     // GET /artists : アーティスト一覧取得 - Get artists list
     @GetMapping
@@ -63,7 +59,7 @@ public class ArtistController {
 
     // DELETE /artists/{id} : アーティスト情報の削除 - Delete artist information
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteArtist(
+    public ResponseEntity<Void> deleteArtist(
             @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id
     ) {
         artistService.deleteArtist(id);

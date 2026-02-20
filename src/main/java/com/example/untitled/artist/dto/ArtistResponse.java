@@ -2,40 +2,38 @@ package com.example.untitled.artist.dto;
 
 import com.example.untitled.artist.Artist;
 import com.example.untitled.common.dto.AuditInfo;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * アーティストマスタAPIレスポンス
  */
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 public class ArtistResponse {
 
     /** ID **/
-    private Long id;
+    private final Long id;
 
     /** アーティスト名 **/
-    private String artistName;
+    private final String artistName;
 
     /** ユニット名 **/
-    private String unitName;
+    private final String unitName;
 
     /** コンテンツ名 **/
-    private String content;
+    private final String content;
 
     /** 監査情報 **/
-    private AuditInfo auditInfo;
+    private final AuditInfo auditInfo;
 
     public static ArtistResponse from(Artist artist) {
-        return new ArtistResponse(
-                artist.getId(),
-                artist.getArtistName(),
-                artist.getUnitName(),
-                artist.getContent(),
-                AuditInfo.from(artist)
-        );
+        return ArtistResponse.builder()
+                .id(artist.getId())
+                .artistName(artist.getArtistName())
+                .unitName(artist.getUnitName())
+                .content(artist.getContent())
+                .auditInfo(AuditInfo.from(artist))
+                .build();
     }
 }

@@ -5,6 +5,7 @@ import com.example.untitled.artist.dto.OptionalArtistRequest;
 import com.example.untitled.common.dto.ErrorDetails;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,15 +18,13 @@ import java.util.List;
 import static com.example.untitled.common.util.EntityHelper.*;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class ArtistService {
 
     private final ArtistRepository artistRepository;
 
-    public ArtistService(ArtistRepository artistRepository) {
-        this.artistRepository = artistRepository;
-    }
-
+    @Transactional(readOnly = true)
     public Page<Artist> getAllArtists(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC")
                 ? Sort.Direction.DESC : Sort.Direction.ASC;

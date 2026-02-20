@@ -4,68 +4,66 @@ import com.example.untitled.artist.Artist;
 import com.example.untitled.common.dto.AuditInfo;
 import com.example.untitled.prskmusic.PrskMusic;
 import com.example.untitled.prskmusic.enums.MusicType;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 public class PrskMusicResponse {
 
     /** ID **/
-    private Long id;
+    private final Long id;
 
     /** 楽曲タイトル **/
-    private String title;
+    private final String title;
 
     /** アーティスト名 **/
-    private String artistName;
+    private final String artistName;
 
     /** ユニット名 **/
-    private String unitName;
+    private final String unitName;
 
     /** コンテンツ名 **/
-    private String content;
+    private final String content;
 
     /** 楽曲タイプ **/
-    private MusicType musicType;
+    private final MusicType musicType;
 
     /** 書き下ろし曲かどうか **/
-    private Boolean specially;
+    private final Boolean specially;
 
     /** 作詞者名 **/
-    private String lyricsName;
+    private final String lyricsName;
 
     /** 作曲者名 **/
-    private String musicName;
+    private final String musicName;
 
     /** ゲストメンバー名 **/
-    private String featuring;
+    private final String featuring;
 
     /** YouTubeリンク **/
-    private String youtubeLink;
+    private final String youtubeLink;
 
     /** 監査情報 **/
-    private AuditInfo auditInfo;
+    private final AuditInfo auditInfo;
 
     public static PrskMusicResponse from(PrskMusic prskMusic) {
         Artist artist = prskMusic.getArtist();
         boolean isArtistDeleted = artist.isDeleted();
 
-        return new PrskMusicResponse(
-                prskMusic.getId(),
-                prskMusic.getTitle(),
-                isArtistDeleted ? "Unknown" : artist.getArtistName(),
-                isArtistDeleted ? null : artist.getUnitName(),
-                isArtistDeleted ? null : artist.getContent(),
-                prskMusic.getMusicType(),
-                prskMusic.getSpecially(),
-                prskMusic.getLyricsName(),
-                prskMusic.getMusicName(),
-                prskMusic.getFeaturing(),
-                prskMusic.getYoutubeLink(),
-                AuditInfo.from(prskMusic)
-        );
+        return PrskMusicResponse.builder()
+                .id(prskMusic.getId())
+                .title(prskMusic.getTitle())
+                .artistName(isArtistDeleted ? "Unknown" : artist.getArtistName())
+                .unitName(isArtistDeleted ? null : artist.getUnitName())
+                .content(isArtistDeleted ? null : artist.getContent())
+                .musicType(prskMusic.getMusicType())
+                .specially(prskMusic.getSpecially())
+                .lyricsName(prskMusic.getLyricsName())
+                .musicName(prskMusic.getMusicName())
+                .featuring(prskMusic.getFeaturing())
+                .youtubeLink(prskMusic.getYoutubeLink())
+                .auditInfo(AuditInfo.from(prskMusic))
+                .build();
     }
 }

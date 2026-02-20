@@ -1,9 +1,7 @@
 package com.example.untitled.prskmusic.dto;
 
 import com.example.untitled.prskmusic.enums.MusicType;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +12,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class OptionalPrskMusicRequest {
 
     /** 楽曲タイトル **/

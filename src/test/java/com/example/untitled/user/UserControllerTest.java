@@ -166,10 +166,10 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.items[0].userName").value("User 1"))
                 .andExpect(jsonPath("$.items[1].id").value(2))
                 .andExpect(jsonPath("$.items[1].userName").value("User 2"))
-                .andExpect(jsonPath("$.metaInfo.pageIndex").value(0))
-                .andExpect(jsonPath("$.metaInfo.totalPages").value(1))
-                .andExpect(jsonPath("$.metaInfo.totalItems").value(2))
-                .andExpect(jsonPath("$.metaInfo.limit").value(20));
+                .andExpect(jsonPath("$.meta.pageIndex").value(0))
+                .andExpect(jsonPath("$.meta.totalPages").value(1))
+                .andExpect(jsonPath("$.meta.totalItems").value(2))
+                .andExpect(jsonPath("$.meta.limit").value(20));
 
         verify(userService, times(1)).getAllUsers(0, 20, "userName", "ASC");
     }
@@ -199,10 +199,10 @@ public class UserControllerTest {
                         .param("limit", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", hasSize(5)))
-                .andExpect(jsonPath("$.metaInfo.pageIndex").value(1))
-                .andExpect(jsonPath("$.metaInfo.totalPages").value(2))
-                .andExpect(jsonPath("$.metaInfo.totalItems").value(15))
-                .andExpect(jsonPath("$.metaInfo.limit").value(10));
+                .andExpect(jsonPath("$.meta.pageIndex").value(1))
+                .andExpect(jsonPath("$.meta.totalPages").value(2))
+                .andExpect(jsonPath("$.meta.totalItems").value(15))
+                .andExpect(jsonPath("$.meta.limit").value(10));
 
         verify(userService, times(1)).getAllUsers(1, 10, "userName", "ASC");
     }
