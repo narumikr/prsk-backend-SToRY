@@ -1,402 +1,154 @@
-# GitHub Copilot Instructions
+# GitHub Copilot コードレビュー手順
 
-This file provides comprehensive guidance for GitHub Copilot coding agents working on this repository. It covers the codebase structure, build processes, testing standards, and architectural patterns.
+このファイルは、本リポジトリのコードレビューに関する包括的なガイダンスを提供し、テスト標準とレビューのベストプラクティスに焦点を当てています。
 
-## 1. Repository Overview
+## 1. コードレビューガイドライン（重要）
 
-**Project Description**: Spring Boot 3.5.6 REST API for music/artist management (Project Sekai music-list backend)
+コードレビューを実施する際は、**必ず** 以下の項目を確認してください。
 
-**Language Composition**:
-- Java: 98.1%
-- Shell scripts: 1.9%
+### レビュー通信
+- **日本語でコメント**: すべてのレビューコメントは日本語で記述すること
+- **具体的なコード例を提供**: レビューフィードバック には具体的なコード例を含めること
 
-**Technology Stack**:
-- **Language**: Java 21
-- **Framework**: Spring Boot 3.5.6
-- **Database**: PostgreSQL (dev/E2E), H2 (unit tests)
-- **Build Tool**: Gradle (always use `./gradlew`, never system Gradle)
-- **API Base Path**: `/btw-api/v1`
-- **Port**: 8080
+### コード品質チェック
+- **スペルチェック と構文**: スペルミスや構文ミスなど人が見落としやすい部分を確認
+- **命名規則**: 命名規則が一般的なものと異なっていないか確認。カスタムまたは異常なパターンを使用していないか確認
 
-**API Documentation**: https://narumikr.github.io/prsk-backend-SToRY/
+### アーキテクチャと設計
+- **レイヤードアーキテクチャ**: コードがレイヤードアーキテクチャの原則に適切に従っているか確認
+- **役割分担**: DTO、Entity などの役割が混ざっていないか、適切に役割分担できているか確認
+  - DTO: API レイヤーのリクエスト/レスポンスオブジェクト
+  - Entity: JPA エンティティとビジネスロジック
+  - Service: ビジネスロジック統合
+  - Repository: データアクセスレイヤー
 
-## 2. Build & Test Commands
 
-### Core Commands
+### API 設計
+- **REST 原則**: API 仕様が REST 原則に沿っているか確認
+  - 適切な HTTP メソッド（GET、POST、PUT、DELETE）
+  - 正しいステータスコード（200、201、400、404、409 など）
+  - リソースベース URL
+  - ステートレス通信
 
-**Always use `./gradlew`** (never system Gradle)
+### エラーハンドリングとパフォーマンス
+- **例外処理**: 例外処理がコードベース全体で統一されているか確認
+  - 一元化されたエラーハンドリングに `GlobalExceptionHandler` を使用
+  - 適切なカスタム例外（`EntityNotFoundException`、`DuplicationResourceException`）をスロー
+- **パフォーマンス最適化**: 最適化の機会やパフォーマンス改善の可能性を確認
+  - 不要なデータベースクエリ
+  - N+1 クエリ問題
+  - インデックスの欠落
+  - 非効率なアルゴリズム
 
-```bash
-# Build project (skip tests)
-./gradlew build -x test
+### レビューチェックリスト
 
-# Run development server (requires PostgreSQL on localhost:5432)
-./gradlew bootRun
+すべてのコードレビューでこのチェックリストを使用してください：
+- [ ] コメントは日本語で記述されている
+- [ ] フィードバックに具体的なコード例が含まれている
+- [ ] スペルミスまたは構文エラーがない
+- [ ] 命名規則が標準的で一貫している
+- [ ] レイヤードアーキテクチャが適切に適用されている
+- [ ] DTO と Entity が適切に分離されている
+- [ ] REST 原則に従っている
+- [ ] 例外処理が一貫している
+- [ ] パフォーマンスが最適化されている
+- [ ] 明らかな改善の機会がない
 
-# Clean build artifacts
-./gradlew clean
-```
+## 2. 開発ガイドライン（重要）
 
-### Test Commands
+1. **論理削除**: **必ず** `isDeleted=true` で論理削除を使用します。レコード物理削除は禁止。
+2. **検証**: すべての DTO に Jakarta Bean Validation アノテーション（`@NotNull`、`@Size`、`@Min`、`@Max`）を使用
+3. **Lombok**: ボイラープレート削減のため Lombok アノテーション（`@Data`、`@Builder`、`@NoArgsConstructor`、`@AllArgsConstructor`）を使用
+4. **トランザクション**: データ変更するサービスメソッドは **必ず** `@Transactional` アノテーションを付与
+5. **部分更新**: `EntityHelper.updateIfNotNull()` をオプショナルフィールド更新に使用
+6. **ページネーション**: デフォルト page=1、limit=20、最大 limit=100
+7. **命名**: 既存パターンに従う（例：`{リソース}Controller`、`{リソース}Service`）
 
-```bash
-# Run unit tests only (uses H2 in-memory database)
-./gradlew testUnit
+### API エンドポイントパターン
 
-# Run E2E tests only (uses Docker PostgreSQL on port 5433)
-./gradlew testE2e
+すべてのリソースは一貫した CRUD パターンに従う：
+- `GET /{resources}` - リスト（ページネーション付き）（`page`、`limit`、`sort` クエリパラメータ）
+- `POST /{resources}` - 作成（201 Created を返す）
+- `PUT /{resources}/{id}` - 更新（200 OK を返す）
+- `DELETE /{resources}/{id}` - 論理削除（204 No Content を返す）
 
-# Run all tests (both unit and E2E)
-./gradlew test
-```
+### テストガイドライン
 
-### Test Execution Details
+1. 完全なテスト要件については `TEST_DESIGN_SPECIFICATION_FOR_UNITTEST.md` を参照
+2. テンプレートとして `ArtistControllerTest.java` と `ArtistServiceTest.java` を使用
+3. 機能実装前にテストを作成する（TDD アプローチを推奨）
+4. 100% カバレッジ（行、分岐、メソッド）を目指す
+5. 成功パスと失敗パスの両方をテスト
+6. エッジケースと境界条件を含める
 
-**Unit Tests** (`./gradlew testUnit`):
-- Excludes tests tagged with `@Tag("e2e")`
-- Uses H2 in-memory database
-- Report location: `build/reports/tests/testUnit/index.html`
-- Automatically opens report in browser (except in CI)
+### コード品質
 
-**E2E Tests** (`./gradlew testE2e`):
-- Auto-starts PostgreSQL container via `dockerComposeUp` task
-- Waits up to 30 seconds for database readiness
-- Uses PostgreSQL on localhost:5433 (container port mapping: 5433:5432)
-- Report location: `build/reports/tests/testE2e/index.html`
-- Automatically opens report in browser (except in CI)
+- 既存のコードパターンと構造に従う
+- 明確で説明的なテスト名を記述
+- public メソッドに JavaDoc コメントを追加（既存スタイルに合わせる）
+- メソッドを単一責任に保つ
+- 意味のある変数名を使用
 
-**Docker Management**:
-```bash
-# Stop E2E Docker containers manually if needed
-./gradlew dockerComposeDown
+## 3. テスト標準（参考）
 
-# Or use docker compose directly
-docker compose -f docker-compose.e2e.yml down
-```
+**参照ドキュメント**: `src/test/TEST_DESIGN_SPECIFICATION_FOR_UNITTEST.md` はテスト標準の権威的なソースです。テストを作成する際は必ず参照してください。
 
-### Common Issues & Solutions
-
-| Issue | Solution |
-|-------|----------|
-| E2E tests fail | Check Docker is running and port 5433 is free |
-| Permission denied | Run `chmod +x gradlew` |
-| Dev server won't start | Verify PostgreSQL is running on localhost:5432 with credentials postgres/postgres |
-| Port already in use | Stop existing services on port 8080 (dev) or 5433 (E2E) |
-
-## 3. Project Architecture
-
-### Directory Structure
-
-```
-Narumikr/prsk-backend-SToRY/
-├── .github/
-│   ├── workflows/              # CI/CD workflows
-│   │   ├── unit-test.yml       # Unit test automation
-│   │   ├── e2e-test.yml        # E2E test automation
-│   │   └── api-docs-deploy.yml # API docs deployment
-│   └── PULL_REQUEST_TEMPLATE.md
-├── api/                        # OpenAPI specifications
-├── src/main/java/com/example/untitled/
-│   ├── UntitledApplication.java  # Main application entry point
-│   ├── artist/                   # Artist feature module
-│   ├── user/                     # User feature module
-│   ├── common/                   # Shared components
-│   │   ├── entity/
-│   │   │   └── BaseEntity.java  # Abstract base with audit fields
-│   │   ├── exception/
-│   │   │   └── GlobalExceptionHandler.java  # Centralized exception handling
-│   │   ├── dto/                 # Shared DTOs (ErrorResponse, MetaInfo)
-│   │   └── util/
-│   │       └── EntityHelper.java  # Helper for partial updates
-│   └── config/
-│       └── JpaConfig.java       # JPA auditing configuration
-├── src/main/resources/
-│   ├── application.properties        # Base configuration
-│   └── application-dev.properties    # Development profile config
-├── src/test/
-│   ├── java/com/example/untitled/
-│   ├── resources/
-│   │   ├── application.properties      # Test base config
-│   │   └── application-e2e.properties  # E2E test config
-│   └── TEST_DESIGN_SPECIFICATION_FOR_UNITTEST.md  # Authoritative test spec
-├── build.gradle                # Build configuration
-├── docker-compose.e2e.yml      # E2E PostgreSQL container
-└── gradlew / gradlew.bat       # Gradle wrapper scripts
-```
-
-### Layered Architecture
-
-**Flow**: `Controller → Service → Repository → Database`
-
-Each feature module (e.g., `artist/`, `user/`) contains:
-- **Entity.java**: JPA entity with Lombok annotations
-- **Controller.java**: REST endpoints, validation handling
-- **Service.java**: Business logic with `@Transactional` annotations
-- **Repository.java**: Spring Data JPA interface
-- **dto/**: Request and Response DTOs
-
-### Key Components
-
-**BaseEntity** (`common/entity/BaseEntity.java`):
-- Provides audit fields: `createdAt`, `updatedAt`, `createdBy`, `updatedBy`
-- Soft delete support: `isDeleted` boolean flag
-- All entities inherit from BaseEntity
-
-**GlobalExceptionHandler** (`common/exception/GlobalExceptionHandler.java`):
-- Maps exceptions to HTTP responses
-- Handles validation errors, not found errors, conflicts
-- Returns consistent error response format
-
-**EntityHelper** (`common/util/EntityHelper.java`):
-- `updateIfNotNull()` method for partial updates
-- Prevents overwriting existing values with null
-
-### Architectural Patterns
-
-1. **Soft Deletes**: All deletions set `isDeleted=true` (never hard delete)
-2. **Audit Fields**: Auto-managed via JPA auditing (`@EnableJpaAuditing`)
-3. **Pagination**: Spring Data `Page<T>` with metadata (default: page 1, limit 20, max 100)
-4. **Validation**: Jakarta Bean Validation annotations on DTOs (`@NotNull`, `@Size`, etc.)
-5. **Lombok**: All entities/DTOs use Lombok (`@Data`, `@Builder`, etc.)
-6. **Transactional Service Methods**: Methods modifying data use `@Transactional`
-
-## 4. Testing Standards (CRITICAL)
-
-**Reference Document**: `src/test/TEST_DESIGN_SPECIFICATION_FOR_UNITTEST.md` is the authoritative source for testing standards. Always consult it when writing tests.
-
-### Test Naming Convention
+### テスト命名規約
 
 ```
-{methodName}{Success|Error}[_with{Condition}][_{Detail}]
+{メソッド名}{Success|Error}[_with{条件}][_{詳細}]
 ```
 
-Examples:
+例：
 - `createArtistSuccess`
 - `createArtistError_withBadRequest_RequiredFieldNull`
 - `updateArtistSuccess_PartialUpdate`
 
-### Controller Tests
+### コントローラテスト
 
-**Annotations**: `@WebMvcTest({Resource}Controller.class)`
+**アノテーション**: `@WebMvcTest({リソース}Controller.class)`
 
-**Key Practices**:
-- Use `MockMvc` for HTTP testing
-- Mock services with `@MockitoBean`
-- Test all HTTP status codes (200, 201, 400, 404, 409, etc.)
-- Verify request validation
-- Check JSON response structure with `jsonPath`
+**重要な実践**：
+- HTTP テストに `MockMvc` を使用
+- `@MockitoBean` でサービスをモック
+- すべての HTTP ステータスコード（200、201、400、404、409 など）をテスト
+- リクエスト検証を検証
+- `jsonPath` で JSON レスポンス構造を確認
 
-**Required Test Cases** (per endpoint):
-- **POST**: success, required null, length over, unique constraint
-- **GET (list)**: default params, pagination, invalid page/limit
-- **PUT**: all fields, partial update, not found, length over, unique constraint, invalid ID
-- **DELETE**: success, not found
+**必須テストケース**（エンドポイントごと）：
+- **POST**: 成功、必須フィールド null、長さ超過、一意制約
+- **GET（リスト）**: デフォルトパラメータ、ページネーション、ページ/リミット不正
+- **PUT**: すべてのフィールド、部分更新、見つからない、長さ超過、一意制約、無効なID
+- **DELETE**: 成功、見つからない
 
-### Service Tests
+### サービステスト
 
-**Annotations**: `@ExtendWith(MockitoExtension.class)`
+**アノテーション**: `@ExtendWith(MockitoExtension.class)`
 
-**Key Practices**:
-- Mock repositories with `@Mock`
-- Inject service with `@InjectMocks`
-- Test business logic and exception scenarios
-- Verify repository method calls with `verify()`
+**重要な実践**：
+- `@Mock` でリポジトリをモック
+- `@InjectMocks` でサービスをインジェクト
+- ビジネスロジックと例外シナリオをテスト
+- `verify()` でリポジトリメソッド呼び出しを検証
 
-**Required Test Cases** (per method):
-- **create**: success, duplication error
-- **getAll**: ASC sort, DESC sort, empty list
-- **update**: all fields, partial, same value (unique field), all null, not found, duplication
-- **delete**: success, not found
+**必須テストケース**（メソッドごと）：
+- **create**: 成功、重複エラー
+- **getAll**: ASC ソート、DESC ソート、空リスト
+- **update**: すべてのフィールド、部分更新、同じ値（一意フィールド）、すべて null、見つからない、重複
+- **delete**: 成功、見つからない
 
-### Coverage Goals
+### カバレッジ目標
 
-- **Line Coverage**: 100%
-- **Branch Coverage**: 100%
-- **Method Coverage**: 100%
+- **行カバレッジ**: 100%
+- **分岐カバレッジ**: 100%
+- **メソッドカバレッジ**: 100%
 
-### Reference Implementations
+### 参照実装
 
-- `ArtistControllerTest.java`: 16 test cases
-- `ArtistServiceTest.java`: 13 test cases
-
-Use these as templates for new feature tests.
-
-## 5. CI/CD & Validation
-
-### GitHub Actions Workflows
-
-**unit-test.yml**:
-- Triggers on PRs to `main` branch
-- Uses JDK 21 (temurin distribution)
-- Runs `./gradlew testUnit`
-- Publishes test report using `dorny/test-reporter@v2`
-
-**e2e-test.yml**:
-- Triggers on PRs to `main` branch
-- Uses JDK 21 (temurin distribution)
-- Runs `./gradlew testE2e`
-- Always cleans up Docker containers: `docker compose -f docker-compose.e2e.yml down`
-
-**api-docs-deploy.yml**:
-- Deploys API documentation to GitHub Pages
-
-### PR Checklist (from template)
-
-Before submitting a PR, verify:
-- [ ] Branch name describes the work (e.g., `20250831_add_readme`)
-- [ ] New APIs have unit tests added
-- [ ] New APIs have E2E tests added
-- [ ] Unit tests pass locally (`./gradlew testUnit`)
-- [ ] E2E tests pass locally (`./gradlew testE2e`)
-- [ ] API documentation updated if endpoints changed
-- [ ] Dev environment deployment tested
-- [ ] AI review completed and issues addressed
-
-## 6. Configuration Files
-
-### build.gradle
-
-- Java 21 with `JavaLanguageVersion.of(21)`
-- Spring Boot 3.5.6
-- Custom test tasks: `testUnit` (excludes `@Tag("e2e")`), `testE2e` (includes only `@Tag("e2e")`)
-- Docker tasks: `dockerComposeUp`, `dockerComposeDown`
-- Auto-opens test reports in browser (disabled in CI)
-
-### application.properties (Base)
-
-```properties
-spring.application.name=untitled
-server.servlet.context-path=/btw-api/v1
-server.port=8080
-spring.profiles.active=dev
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.open-in-view=false
-```
-
-### application-dev.properties (Development)
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-```
-
-### application-e2e.properties (E2E Tests)
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5433/e2e_testdb
-spring.datasource.username=e2e_user
-spring.datasource.password=e2e_password
-spring.jpa.hibernate.ddl-auto=create-drop
-```
-
-### docker-compose.e2e.yml
-
-- **Image**: postgres:16-alpine
-- **Container Name**: prsk-e2e-db
-- **Port Mapping**: 5433:5432 (avoids conflict with dev database)
-- **Credentials**: e2e_user/e2e_password
-- **Database**: e2e_testdb
-- **Health Check**: Enabled with 5s interval
-
-## 7. Important Notes
-
-### Trust These Instructions
-
-These instructions are comprehensive and verified. Only search the codebase if:
-- You need specific implementation details not covered here
-- You're looking for reference examples
-- The instructions appear incomplete for your specific task
-
-### Development Guidelines
-
-1. **Soft Deletes**: ALWAYS use soft deletes (`isDeleted=true`). Never hard delete records.
-2. **Validation**: Use Jakarta Bean Validation annotations on all DTOs (`@NotNull`, `@Size`, `@Min`, `@Max`)
-3. **Lombok**: Use Lombok annotations to reduce boilerplate (`@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`)
-4. **Transactions**: Service methods that modify data MUST have `@Transactional` annotation
-5. **Partial Updates**: Use `EntityHelper.updateIfNotNull()` for optional field updates
-6. **Pagination**: Default page=1, limit=20, max limit=100
-7. **Naming**: Follow existing patterns (e.g., `{Resource}Controller`, `{Resource}Service`)
-
-### API Endpoint Patterns
-
-All resources follow consistent CRUD patterns:
-- `GET /{resources}` - List with pagination (`page`, `limit`, `sort` query params)
-- `POST /{resources}` - Create (returns 201 Created)
-- `PUT /{resources}/{id}` - Update (returns 200 OK)
-- `DELETE /{resources}/{id}` - Soft delete (returns 204 No Content)
-
-### Testing Guidelines
-
-1. Reference `TEST_DESIGN_SPECIFICATION_FOR_UNITTEST.md` for complete testing requirements
-2. Use `ArtistControllerTest.java` and `ArtistServiceTest.java` as templates
-3. Write tests BEFORE implementing features (TDD approach recommended)
-4. Aim for 100% coverage (line, branch, method)
-5. Test both success and failure paths
-6. Include edge cases and boundary conditions
-
-### Code Quality
-
-- Follow existing code patterns and structure
-- Write clear, descriptive test names
-- Add JavaDoc comments for public methods (match existing style)
-- Keep methods focused and single-purpose
-- Use meaningful variable names
-
-## 8. Code Review Guidelines (CRITICAL)
-
-When performing code reviews, **ALWAYS** verify the following items:
-
-### Review Communication
-- **Comment in Japanese**: All review comments must be written in Japanese (日本語でコメントすること)
-- **Provide Specific Code**: Review feedback must include concrete code examples (具体的なコードを示すこと)
-
-### Code Quality Checks
-- **Spell Check & Syntax**: Verify spelling and syntax errors that humans commonly miss (スペルミスや構文ミスなど人がケアレスミスしやすい部分も確認すること)
-- **Naming Conventions**: Ensure naming follows standard conventions, not custom or unusual patterns (命名規則が一般的なものと異なっていないか)
-
-### Architecture & Design
-- **Domain-Driven Design**: Verify the code follows DDD principles appropriately (ドメイン駆動設計として適切になっているか)
-- **Role Separation**: Check that DTOs, Entities, and other components maintain proper separation of concerns (DTOやEntityなどの役割が混ざってしまっていないか、適切に役割分担できているか)
-  - DTOs: Request/Response objects for API layer
-  - Entities: JPA entities with business logic
-  - Services: Business logic orchestration
-  - Repositories: Data access layer
-
-### API Design
-- **REST Principles**: Ensure API specifications follow REST principles (REST原則にAPI仕様が沿っているか)
-  - Proper HTTP methods (GET, POST, PUT, DELETE)
-  - Correct status codes (200, 201, 400, 404, 409, etc.)
-  - Resource-based URLs
-  - Stateless communication
-
-### Error Handling & Performance
-- **Exception Handling**: Verify exception handling is consistent across the codebase (例外処理が統一されているか)
-  - Use `GlobalExceptionHandler` for centralized error handling
-  - Throw appropriate custom exceptions (`EntityNotFoundException`, `DuplicationResourceException`)
-- **Performance Optimization**: Check for optimization opportunities and performance improvements (パフォーマンスとして最適化されているか、改善できる部分は存在しないか)
-  - Unnecessary database queries
-  - N+1 query problems
-  - Missing indexes
-  - Inefficient algorithms
-
-### Review Checklist
-
-Use this checklist for every code review:
-- [ ] Comments are written in Japanese
-- [ ] Specific code examples provided in feedback
-- [ ] No spelling or syntax errors
-- [ ] Naming conventions are standard and consistent
-- [ ] DDD principles are properly applied
-- [ ] DTOs and Entities are properly separated
-- [ ] REST principles are followed
-- [ ] Exception handling is consistent
-- [ ] Performance is optimized
-- [ ] No obvious improvement opportunities exist
+- `ArtistControllerTest.java`: 16 テストケース
+- `ArtistServiceTest.java`: 13 テストケース
 
 ---
 
-**Last Updated**: 2025-12-31
-**Version**: 1.1.0
+**Last Updated**: 2026-02-19
+**Version**: 2.0.0
