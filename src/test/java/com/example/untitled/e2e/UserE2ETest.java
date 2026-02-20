@@ -72,7 +72,7 @@ class UserE2ETest extends E2ETestBase {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertNotNull(response.getBody().getItems());
-            assertNotNull(response.getBody().getMetaInfo());
+            assertNotNull(response.getBody().getMeta());
             assertTrue(response.getBody().getItems().size() >= 2);
         }
 
@@ -93,8 +93,8 @@ class UserE2ETest extends E2ETestBase {
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
-            assertNotNull(response.getBody().getMetaInfo());
-            assertEquals(2, response.getBody().getMetaInfo().getLimit());
+            assertNotNull(response.getBody().getMeta());
+            assertEquals(2, response.getBody().getMeta().getLimit());
             assertTrue(response.getBody().getItems().size() <= 2);
         }
     }
