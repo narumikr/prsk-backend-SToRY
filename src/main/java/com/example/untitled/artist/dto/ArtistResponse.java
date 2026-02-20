@@ -31,6 +31,7 @@ public class ArtistResponse {
         return ArtistResponse.builder()
                 .id(artist.getId())
                 .artistName(artist.getArtistName())
+                .unitName(artist.getUnitName())
                 .content(artist.getContent())
                 .auditInfo(AuditInfo.from(artist))
                 .build();
