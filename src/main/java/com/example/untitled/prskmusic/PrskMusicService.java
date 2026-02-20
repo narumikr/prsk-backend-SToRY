@@ -8,10 +8,12 @@ import com.example.untitled.prskmusic.dto.OptionalPrskMusicRequest;
 import com.example.untitled.prskmusic.dto.PrskMusicRequest;
 import com.example.untitled.prskmusic.enums.MusicType;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,20 +22,14 @@ import java.util.List;
 import static com.example.untitled.common.util.EntityHelper.updateIfNotNull;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class PrskMusicService {
 
     private final PrskMusicRepository prskMusicRepository;
     private final ArtistRepository artistRepository;
 
-    public PrskMusicService(
-            PrskMusicRepository prskMusicRepository,
-            ArtistRepository artistRepository
-    ) {
-        this.prskMusicRepository = prskMusicRepository;
-        this.artistRepository = artistRepository;
-    }
-
+    @Transactional(readOnly = true)
     public Page<PrskMusic> getAllPrskMusic(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC")
                 ? Sort.Direction.DESC : Sort.Direction.ASC;

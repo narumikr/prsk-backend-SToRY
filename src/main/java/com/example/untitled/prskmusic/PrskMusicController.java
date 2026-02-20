@@ -7,6 +7,7 @@ import com.example.untitled.prskmusic.dto.PrskMusicResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/prsk-music")
 @Validated
 public class PrskMusicController {
 
     private final PrskMusicService prskMusicService;
-
-    public PrskMusicController(PrskMusicService prskMusicService) {
-        this.prskMusicService = prskMusicService;
-    }
 
     // GET /prsk-music : プロセカ楽曲一覧取得 - Get prsk music list
     @GetMapping
@@ -61,7 +59,7 @@ public class PrskMusicController {
 
     // Delete /prsk-music/{id} : プロセカ楽曲情報の削除 - Delete prsk music information
     @DeleteMapping("/{id}")
-    public ResponseEntity deletePrskMusic(
+    public ResponseEntity<Void> deletePrskMusic(
             @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id
     ) {
         prskMusicService.deletePrskMusic(id);

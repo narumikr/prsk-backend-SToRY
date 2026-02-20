@@ -6,6 +6,7 @@ import com.example.untitled.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 @Validated
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) { this.userService = userService; }
 
     // GET /users : ユーザー取得一覧 - Get users list
     @GetMapping
@@ -60,7 +60,7 @@ public class UserController {
 
     // DELETE /users/{id} : ユーザー情報の削除 - Delete user information
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteUser(
+    public ResponseEntity<Void> deleteUser(
             @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id
     ) {
         userService.deleteUser(id);
