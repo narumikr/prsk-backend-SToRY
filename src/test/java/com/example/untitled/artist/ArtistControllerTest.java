@@ -3,7 +3,6 @@ package com.example.untitled.artist;
 import com.example.untitled.artist.dto.ArtistListResponse;
 import com.example.untitled.artist.dto.ArtistResponse;
 import com.example.untitled.common.dto.ErrorDetails;
-import com.example.untitled.common.dto.MetaInfo;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
