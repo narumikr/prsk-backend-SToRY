@@ -51,9 +51,8 @@ public class GlobalExceptionHandler {
         List<ErrorDetails> details = exception.getConstraintViolations()
                 .stream()
                 .map(violation -> {
-                    String temp = violation.getPropertyPath().toString();
-                    System.out.println(temp);
-                    String field = temp.substring(temp.lastIndexOf('.') + 1);
+                    String path = violation.getPropertyPath().toString();
+                    String field = path.substring(path.lastIndexOf('.') + 1);
                     return new ErrorDetails(
                             field,
                             violation.getMessage()

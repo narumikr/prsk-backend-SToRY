@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,8 +30,7 @@ public class ArtistController {
             @Min(value = 1, message = "Limit must be at least 1")
             @Max(value = 100, message = "Limit must not exceed 100") Integer limit
     ) {
-        Page<Artist> artistPage = artistService.getAllArtists(page - 1, limit, "artistName", "ASC");
-        ArtistListResponse response = ArtistListResponse.from(artistPage);
+        ArtistListResponse response = artistService.getAllArtists(page - 1, limit, "artistName", "ASC");
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -41,8 +39,7 @@ public class ArtistController {
     public ResponseEntity<ArtistResponse> registerArtist(
             @Valid @RequestBody ArtistRequest request
     ) {
-        Artist artist = artistService.createArtist(request);
-        ArtistResponse response = ArtistResponse.from(artist);
+        ArtistResponse response = artistService.createArtist(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -52,8 +49,7 @@ public class ArtistController {
             @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id,
             @Valid @RequestBody OptionalArtistRequest request
     ) {
-        Artist artist = artistService.updateArtist(id, request);
-        ArtistResponse response = ArtistResponse.from(artist);
+        ArtistResponse response = artistService.updateArtist(id, request);
         return ResponseEntity.ok(response);
     }
 

@@ -3,6 +3,8 @@ package com.example.untitled.prskmusic;
 import com.example.untitled.artist.Artist;
 import com.example.untitled.common.dto.ErrorDetails;
 import com.example.untitled.common.exception.DuplicationResourceException;
+import com.example.untitled.prskmusic.dto.PrskMusicListResponse;
+import com.example.untitled.prskmusic.dto.PrskMusicResponse;
 import com.example.untitled.prskmusic.enums.MusicType;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -62,7 +64,7 @@ public class PrskMusicControllerTest {
         mockPrskMusic.setLyricsName("Test Lyricist");
         mockPrskMusic.setMusicName("Test Composer");
 
-        when(prskMusicService.createPrskMusic(any())).thenReturn(mockPrskMusic);
+        when(prskMusicService.createPrskMusic(any())).thenReturn(PrskMusicResponse.from(mockPrskMusic));
 
         String reqBody = """
                 {
@@ -188,7 +190,7 @@ public class PrskMusicControllerTest {
                 2
         );
 
-        when(prskMusicService.getAllPrskMusic(0, 20, "title", "ASC")).thenReturn(musicPage);
+        when(prskMusicService.getAllPrskMusic(0, 20, "title", "ASC")).thenReturn(PrskMusicListResponse.from(musicPage));
 
         mvcMock.perform(get("/prsk-music"))
                 .andExpect(status().isOk())
@@ -223,7 +225,7 @@ public class PrskMusicControllerTest {
                 15
         );
 
-        when(prskMusicService.getAllPrskMusic(1, 10, "title", "ASC")).thenReturn(musicPage);
+        when(prskMusicService.getAllPrskMusic(1, 10, "title", "ASC")).thenReturn(PrskMusicListResponse.from(musicPage));
 
         mvcMock.perform(get("/prsk-music")
                         .param("page", "2")
@@ -276,7 +278,7 @@ public class PrskMusicControllerTest {
         PrskMusic updatedMusic = createMockPrskMusic(1L, "Updated Title", MusicType.THREE_D_MV, "https://youtube.com/updated");
         updatedMusic.setLyricsName("Updated Lyricist");
 
-        when(prskMusicService.updatePrskMusic(eq(1L), any())).thenReturn(updatedMusic);
+        when(prskMusicService.updatePrskMusic(eq(1L), any())).thenReturn(PrskMusicResponse.from(updatedMusic));
 
         String reqBody = """
                 {
@@ -307,7 +309,7 @@ public class PrskMusicControllerTest {
     public void updatePrskMusicSuccess_PartialUpdate() throws Exception {
         PrskMusic updatedMusic = createMockPrskMusic(1L, "Updated Title", MusicType.ORIGINAL, "https://youtube.com/original");
 
-        when(prskMusicService.updatePrskMusic(eq(1L), any())).thenReturn(updatedMusic);
+        when(prskMusicService.updatePrskMusic(eq(1L), any())).thenReturn(PrskMusicResponse.from(updatedMusic));
 
         String reqBody = """
                 {

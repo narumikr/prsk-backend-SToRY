@@ -1,6 +1,8 @@
 package com.example.untitled.artist;
 
+import com.example.untitled.artist.dto.ArtistListResponse;
 import com.example.untitled.artist.dto.ArtistRequest;
+import com.example.untitled.artist.dto.ArtistResponse;
 import com.example.untitled.artist.dto.OptionalArtistRequest;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import jakarta.persistence.EntityNotFoundException;
@@ -51,7 +53,7 @@ public class ArtistServiceTest {
         when(artistRepository.findByArtistNameAndIsDeleted("Test artist name", false)).thenReturn(Optional.empty());
         when(artistRepository.save(any(Artist.class))).thenReturn(createdArtist);
 
-        Artist result = artistService.createArtist(request);
+        ArtistResponse result = artistService.createArtist(request);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -114,13 +116,13 @@ public class ArtistServiceTest {
 
         when(artistRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(artistPage);
 
-        Page<Artist> result = artistService.getAllArtists(0, 20, "artistName", "ASC");
+        ArtistListResponse result = artistService.getAllArtists(0, 20, "artistName", "ASC");
 
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals(2, result.getContent().size());
-        assertEquals("Artist A", result.getContent().get(0).getArtistName());
-        assertEquals("Artist B", result.getContent().get(1).getArtistName());
+        assertEquals(2, result.getMeta().getTotalItems());
+        assertEquals(2, result.getItems().size());
+        assertEquals("Artist A", result.getItems().get(0).getArtistName());
+        assertEquals("Artist B", result.getItems().get(1).getArtistName());
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(artistRepository, times(1)).findByIsDeleted(eq(false), pageableCaptor.capture());
@@ -152,12 +154,12 @@ public class ArtistServiceTest {
 
         when(artistRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(artistPage);
 
-        Page<Artist> result = artistService.getAllArtists(0, 20, "artistName", "DESC");
+        ArtistListResponse result = artistService.getAllArtists(0, 20, "artistName", "DESC");
 
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals("Artist B", result.getContent().get(0).getArtistName());
-        assertEquals("Artist A", result.getContent().get(1).getArtistName());
+        assertEquals(2, result.getMeta().getTotalItems());
+        assertEquals("Artist B", result.getItems().get(0).getArtistName());
+        assertEquals("Artist A", result.getItems().get(1).getArtistName());
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(artistRepository, times(1)).findByIsDeleted(eq(false), pageableCaptor.capture());
@@ -179,11 +181,11 @@ public class ArtistServiceTest {
 
         when(artistRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(emptyPage);
 
-        Page<Artist> result = artistService.getAllArtists(0, 20, "artistName", "ASC");
+        ArtistListResponse result = artistService.getAllArtists(0, 20, "artistName", "ASC");
 
         assertNotNull(result);
-        assertEquals(0, result.getTotalElements());
-        assertTrue(result.getContent().isEmpty());
+        assertEquals(0, result.getMeta().getTotalItems());
+        assertTrue(result.getItems().isEmpty());
 
         verify(artistRepository, times(1)).findByIsDeleted(eq(false), any(Pageable.class));
     }
@@ -208,7 +210,7 @@ public class ArtistServiceTest {
         when(artistRepository.findByArtistNameAndIsDeleted("Updated Artist", false)).thenReturn(Optional.empty());
         when(artistRepository.save(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Artist result = artistService.updateArtist(1L, request);
+        ArtistResponse result = artistService.updateArtist(1L, request);
 
         assertNotNull(result);
         assertEquals("Updated Artist", result.getArtistName());
@@ -238,7 +240,7 @@ public class ArtistServiceTest {
         when(artistRepository.findByArtistNameAndIsDeleted("Updated Artist", false)).thenReturn(Optional.empty());
         when(artistRepository.save(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Artist result = artistService.updateArtist(1L, request);
+        ArtistResponse result = artistService.updateArtist(1L, request);
 
         assertNotNull(result);
         assertEquals("Updated Artist", result.getArtistName());
@@ -268,7 +270,7 @@ public class ArtistServiceTest {
         when(artistRepository.findByIdAndIsDeleted(1L, false)).thenReturn(Optional.of(existingArtist));
         when(artistRepository.save(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Artist result = artistService.updateArtist(1L, request);
+        ArtistResponse result = artistService.updateArtist(1L, request);
 
         assertNotNull(result);
         assertEquals("Test Artist", result.getArtistName());
@@ -295,7 +297,7 @@ public class ArtistServiceTest {
         when(artistRepository.findByIdAndIsDeleted(1L, false)).thenReturn(Optional.of(existingArtist));
         when(artistRepository.save(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Artist result = artistService.updateArtist(1L, request);
+        ArtistResponse result = artistService.updateArtist(1L, request);
 
         assertNotNull(result);
         assertEquals("Original Artist", result.getArtistName());

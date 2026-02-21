@@ -5,7 +5,9 @@ import com.example.untitled.artist.ArtistRepository;
 import com.example.untitled.common.dto.ErrorDetails;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import com.example.untitled.prskmusic.dto.OptionalPrskMusicRequest;
+import com.example.untitled.prskmusic.dto.PrskMusicListResponse;
 import com.example.untitled.prskmusic.dto.PrskMusicRequest;
+import com.example.untitled.prskmusic.dto.PrskMusicResponse;
 import com.example.untitled.prskmusic.enums.MusicType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +31,16 @@ public class PrskMusicService {
     private final ArtistRepository artistRepository;
 
     @Transactional(readOnly = true)
-    public Page<PrskMusic> getAllPrskMusic(int page, int size, String sortBy, String direction) {
+    public PrskMusicListResponse getAllPrskMusic(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC")
                 ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-        return prskMusicRepository.findByIsDeleted(false, pageable);
+        Page<PrskMusic> prskMusicPage = prskMusicRepository.findByIsDeleted(false, pageable);
+        return PrskMusicListResponse.from(prskMusicPage);
     }
 
-    public PrskMusic createPrskMusic(PrskMusicRequest reqDto) {
+    public PrskMusicResponse createPrskMusic(PrskMusicRequest reqDto) {
         prskMusicRepository.findByTitleAndMusicTypeAndIsDeleted(
                 reqDto.getTitle(),
                 reqDto.getMusicType(),
@@ -66,10 +68,10 @@ public class PrskMusicService {
         prskMusic.setFeaturing(reqDto.getFeaturing());
         prskMusic.setYoutubeLink(reqDto.getYoutubeLink());
 
-        return prskMusicRepository.save(prskMusic);
+        return PrskMusicResponse.from(prskMusicRepository.save(prskMusic));
     }
 
-    public PrskMusic updatePrskMusic(Long id, OptionalPrskMusicRequest reqDto) {
+    public PrskMusicResponse updatePrskMusic(Long id, OptionalPrskMusicRequest reqDto) {
         PrskMusic prskMusic = prskMusicRepository.findByIdAndIsDeleted(id, false)
                 .orElseThrow(() -> new EntityNotFoundException("Prsk music not found for id: " + id));
 
@@ -108,7 +110,7 @@ public class PrskMusicService {
         updateIfNotNull(reqDto.getFeaturing(), prskMusic::setFeaturing);
         updateIfNotNull(reqDto.getYoutubeLink(), prskMusic::setYoutubeLink);
 
-        return prskMusicRepository.save(prskMusic);
+        return PrskMusicResponse.from(prskMusicRepository.save(prskMusic));
     }
 
     public void deletePrskMusic(Long id) {

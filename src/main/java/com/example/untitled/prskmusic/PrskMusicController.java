@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,8 +30,7 @@ public class PrskMusicController {
             @Min(value = 1, message = "Limit must be at least 1")
             @Max(value = 100, message = "Limit must not exceed 100") Integer limit
     ) {
-        Page<PrskMusic> prskMusicPage = prskMusicService.getAllPrskMusic(page - 1, limit, "title", "ASC");
-        PrskMusicListResponse response = PrskMusicListResponse.from(prskMusicPage);
+        PrskMusicListResponse response = prskMusicService.getAllPrskMusic(page - 1, limit, "title", "ASC");
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -41,8 +39,7 @@ public class PrskMusicController {
     public ResponseEntity<PrskMusicResponse> registerPrskMusic(
             @Valid @RequestBody PrskMusicRequest request
     ) {
-        PrskMusic prskMusic = prskMusicService.createPrskMusic(request);
-        PrskMusicResponse response = PrskMusicResponse.from(prskMusic);
+        PrskMusicResponse response = prskMusicService.createPrskMusic(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -52,8 +49,7 @@ public class PrskMusicController {
             @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id,
             @Valid @RequestBody OptionalPrskMusicRequest request
     ) {
-        PrskMusic prskMusic = prskMusicService.updatePrskMusic(id, request);
-        PrskMusicResponse response = PrskMusicResponse.from(prskMusic);
+        PrskMusicResponse response = prskMusicService.updatePrskMusic(id, request);
         return ResponseEntity.ok(response);
     }
 

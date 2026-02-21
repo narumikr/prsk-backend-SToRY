@@ -2,7 +2,9 @@ package com.example.untitled.user;
 
 import com.example.untitled.common.exception.DuplicationResourceException;
 import com.example.untitled.common.exception.UnauthorizedException;
+import com.example.untitled.user.dto.UserListResponse;
 import com.example.untitled.user.dto.UserRequest;
+import com.example.untitled.user.dto.UserResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,12 +51,11 @@ public class UserServiceTest {
         when(userRepository.findByUserNameAndIsDeleted("testuser", false)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(createdUser);
 
-        User result = userService.createUser(request);
+        UserResponse result = userService.createUser(request);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertEquals("testuser", result.getUserName());
-        assertEquals("testpassword", result.getPassword());
 
         verify(userRepository, times(1)).findByUserNameAndIsDeleted("testuser", false);
         verify(userRepository, times(1)).save(any(User.class));
@@ -111,12 +112,12 @@ public class UserServiceTest {
 
         when(userRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(userPage);
 
-        Page<User> result = userService.getAllUsers(0, 20, "userName", "ASC");
+        UserListResponse result = userService.getAllUsers(0, 20, "userName", "ASC");
 
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals("User A", result.getContent().get(0).getUserName());
-        assertEquals("User B", result.getContent().get(1).getUserName());
+        assertEquals(2, result.getMeta().getTotalItems());
+        assertEquals("User A", result.getItems().get(0).getUserName());
+        assertEquals("User B", result.getItems().get(1).getUserName());
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(userRepository, times(1)).findByIsDeleted(eq(false), pageableCaptor.capture());
@@ -148,12 +149,12 @@ public class UserServiceTest {
 
         when(userRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(userPage);
 
-        Page<User> result = userService.getAllUsers(0, 20, "userName", "DESC");
+        UserListResponse result = userService.getAllUsers(0, 20, "userName", "DESC");
 
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals("User B", result.getContent().get(0).getUserName());
-        assertEquals("User A", result.getContent().get(1).getUserName());
+        assertEquals(2, result.getMeta().getTotalItems());
+        assertEquals("User B", result.getItems().get(0).getUserName());
+        assertEquals("User A", result.getItems().get(1).getUserName());
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(userRepository, times(1)).findByIsDeleted(eq(false), pageableCaptor.capture());
@@ -175,11 +176,11 @@ public class UserServiceTest {
 
         when(userRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(emptyPage);
 
-        Page<User> result = userService.getAllUsers(0, 20, "userName", "ASC");
+        UserListResponse result = userService.getAllUsers(0, 20, "userName", "ASC");
 
         assertNotNull(result);
-        assertEquals(0, result.getTotalElements());
-        assertTrue(result.getContent().isEmpty());
+        assertEquals(0, result.getMeta().getTotalItems());
+        assertTrue(result.getItems().isEmpty());
 
         verify(userRepository, times(1)).findByIsDeleted(eq(false), any(Pageable.class));
     }
@@ -202,7 +203,7 @@ public class UserServiceTest {
         when(userRepository.findByUserNameAndIsDeleted("newuser", false)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        User result = userService.updateUser(1L, request);
+        UserResponse result = userService.updateUser(1L, request);
 
         assertNotNull(result);
         assertEquals("newuser", result.getUserName());
@@ -230,7 +231,7 @@ public class UserServiceTest {
         when(userRepository.findByUserNameAndIsDeleted("testuser", false)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        User result = userService.updateUser(1L, request);
+        UserResponse result = userService.updateUser(1L, request);
 
         assertNotNull(result);
         assertEquals("testuser", result.getUserName());
