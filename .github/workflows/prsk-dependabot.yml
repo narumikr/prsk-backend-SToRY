@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Rename dependabot PR with prsk
-        uses: Narumikr/link-sekai-actions/prsk-dependabot@v2
+        uses: Narumikr/link-sekai-actions/prsk-dependabot@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
