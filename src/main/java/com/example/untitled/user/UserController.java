@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,8 +31,7 @@ public class UserController {
             @Min(value = 1, message = "Limit must be at least 1")
             @Max(value = 100, message = "Limit must not exceed 100") Integer limit
     ) {
-        Page<User> userPage = userService.getAllUsers(page - 1, limit, "userName", "ASC");
-        UserListResponse response = UserListResponse.from(userPage);
+        UserListResponse response = userService.getAllUsers(page - 1, limit, "userName", "ASC");
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -42,8 +40,7 @@ public class UserController {
     public ResponseEntity<UserResponse> registerUser(
             @Valid @RequestBody UserRequest request
     ) {
-        User user = userService.createUser(request);
-        UserResponse response = UserResponse.from(user);
+        UserResponse response = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -53,8 +50,7 @@ public class UserController {
             @PathVariable @Min(value = 1, message = "ID must be 1 or greater.") Long id,
             @Valid @RequestBody UserRequest request
     ) {
-        User user = userService.updateUser(id, request);
-        UserResponse response = UserResponse.from(user);
+        UserResponse response = userService.updateUser(id, request);
         return ResponseEntity.ok(response);
     }
 

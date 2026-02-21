@@ -1,6 +1,5 @@
 package com.example.untitled.common.dto;
 
-import com.example.untitled.artist.Artist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;

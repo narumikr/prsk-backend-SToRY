@@ -3,7 +3,9 @@ package com.example.untitled.user;
 import com.example.untitled.common.dto.ErrorDetails;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import com.example.untitled.common.exception.UnauthorizedException;
+import com.example.untitled.user.dto.UserListResponse;
 import com.example.untitled.user.dto.UserRequest;
+import com.example.untitled.user.dto.UserResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,15 +25,16 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<User> getAllUsers(int page, int size, String sortBy, String direction) {
+    public UserListResponse getAllUsers(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC")
                 ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-        return userRepository.findByIsDeleted(false, pageable);
+        Page<User> userPage = userRepository.findByIsDeleted(false, pageable);
+        return UserListResponse.from(userPage);
     }
 
-    public User createUser(UserRequest reqDto) {
+    public UserResponse createUser(UserRequest reqDto) {
         userRepository.findByUserNameAndIsDeleted(reqDto.getUserName(), false)
                 .ifPresent(user -> {
                     throw new DuplicationResourceException(
@@ -47,10 +50,10 @@ public class UserService {
         user.setUserName(reqDto.getUserName());
         user.setPassword(reqDto.getPassword());
 
-        return userRepository.save(user);
+        return UserResponse.from(userRepository.save(user));
     }
 
-    public User updateUser(Long id, UserRequest reqDto) {
+    public UserResponse updateUser(Long id, UserRequest reqDto) {
         // IDで既存ユーザーを検索（削除されていないもの）
         User existingUser = userRepository.findByIdAndIsDeleted(id, false)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -86,7 +89,7 @@ public class UserService {
         existingUser.setUserName(reqDto.getUserName());
         existingUser.setPassword(reqDto.getPassword());
 
-        return userRepository.save(existingUser);
+        return UserResponse.from(userRepository.save(existingUser));
     }
 
     public void deleteUser(Long id) {

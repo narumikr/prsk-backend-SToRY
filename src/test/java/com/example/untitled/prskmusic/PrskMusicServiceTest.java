@@ -4,7 +4,9 @@ import com.example.untitled.artist.Artist;
 import com.example.untitled.artist.ArtistRepository;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import com.example.untitled.prskmusic.dto.OptionalPrskMusicRequest;
+import com.example.untitled.prskmusic.dto.PrskMusicListResponse;
 import com.example.untitled.prskmusic.dto.PrskMusicRequest;
+import com.example.untitled.prskmusic.dto.PrskMusicResponse;
 import com.example.untitled.prskmusic.enums.MusicType;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -77,7 +79,7 @@ public class PrskMusicServiceTest {
         when(artistRepository.findByIdAndIsDeleted(1L, false)).thenReturn(Optional.of(artist));
         when(prskMusicRepository.save(any(PrskMusic.class))).thenReturn(createdMusic);
 
-        PrskMusic result = prskMusicService.createPrskMusic(request);
+        PrskMusicResponse result = prskMusicService.createPrskMusic(request);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -160,13 +162,13 @@ public class PrskMusicServiceTest {
 
         when(prskMusicRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(musicPage);
 
-        Page<PrskMusic> result = prskMusicService.getAllPrskMusic(0, 20, "title", "ASC");
+        PrskMusicListResponse result = prskMusicService.getAllPrskMusic(0, 20, "title", "ASC");
 
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals(2, result.getContent().size());
-        assertEquals("Music A", result.getContent().get(0).getTitle());
-        assertEquals("Music B", result.getContent().get(1).getTitle());
+        assertEquals(2, result.getMeta().getTotalItems());
+        assertEquals(2, result.getItems().size());
+        assertEquals("Music A", result.getItems().get(0).getTitle());
+        assertEquals("Music B", result.getItems().get(1).getTitle());
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(prskMusicRepository, times(1)).findByIsDeleted(eq(false), pageableCaptor.capture());
@@ -194,12 +196,12 @@ public class PrskMusicServiceTest {
 
         when(prskMusicRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(musicPage);
 
-        Page<PrskMusic> result = prskMusicService.getAllPrskMusic(0, 20, "title", "DESC");
+        PrskMusicListResponse result = prskMusicService.getAllPrskMusic(0, 20, "title", "DESC");
 
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals("Music B", result.getContent().get(0).getTitle());
-        assertEquals("Music A", result.getContent().get(1).getTitle());
+        assertEquals(2, result.getMeta().getTotalItems());
+        assertEquals("Music B", result.getItems().get(0).getTitle());
+        assertEquals("Music A", result.getItems().get(1).getTitle());
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(prskMusicRepository, times(1)).findByIsDeleted(eq(false), pageableCaptor.capture());
@@ -221,11 +223,11 @@ public class PrskMusicServiceTest {
 
         when(prskMusicRepository.findByIsDeleted(eq(false), any(Pageable.class))).thenReturn(emptyPage);
 
-        Page<PrskMusic> result = prskMusicService.getAllPrskMusic(0, 20, "title", "ASC");
+        PrskMusicListResponse result = prskMusicService.getAllPrskMusic(0, 20, "title", "ASC");
 
         assertNotNull(result);
-        assertEquals(0, result.getTotalElements());
-        assertTrue(result.getContent().isEmpty());
+        assertEquals(0, result.getMeta().getTotalItems());
+        assertTrue(result.getItems().isEmpty());
 
         verify(prskMusicRepository, times(1)).findByIsDeleted(eq(false), any(Pageable.class));
     }
@@ -252,12 +254,12 @@ public class PrskMusicServiceTest {
         when(artistRepository.findByIdAndIsDeleted(2L, false)).thenReturn(Optional.of(newArtist));
         when(prskMusicRepository.save(any(PrskMusic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        PrskMusic result = prskMusicService.updatePrskMusic(1L, request);
+        PrskMusicResponse result = prskMusicService.updatePrskMusic(1L, request);
 
         assertNotNull(result);
         assertEquals("Updated Title", result.getTitle());
         assertEquals(MusicType.THREE_D_MV, result.getMusicType());
-        assertEquals("New Artist", result.getArtist().getArtistName());
+        assertEquals("New Artist", result.getArtistName());
         assertEquals("New Lyricist", result.getLyricsName());
 
         verify(prskMusicRepository, times(1)).findByIdAndIsDeleted(1L, false);
@@ -283,7 +285,7 @@ public class PrskMusicServiceTest {
                 .thenReturn(Optional.empty());
         when(prskMusicRepository.save(any(PrskMusic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        PrskMusic result = prskMusicService.updatePrskMusic(1L, request);
+        PrskMusicResponse result = prskMusicService.updatePrskMusic(1L, request);
 
         assertNotNull(result);
         assertEquals("Updated Title", result.getTitle());
@@ -312,7 +314,7 @@ public class PrskMusicServiceTest {
         when(prskMusicRepository.findByIdAndIsDeleted(1L, false)).thenReturn(Optional.of(existingMusic));
         when(prskMusicRepository.save(any(PrskMusic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        PrskMusic result = prskMusicService.updatePrskMusic(1L, request);
+        PrskMusicResponse result = prskMusicService.updatePrskMusic(1L, request);
 
         assertNotNull(result);
         assertEquals("Test Title", result.getTitle());
@@ -338,7 +340,7 @@ public class PrskMusicServiceTest {
         when(prskMusicRepository.findByIdAndIsDeleted(1L, false)).thenReturn(Optional.of(existingMusic));
         when(prskMusicRepository.save(any(PrskMusic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        PrskMusic result = prskMusicService.updatePrskMusic(1L, request);
+        PrskMusicResponse result = prskMusicService.updatePrskMusic(1L, request);
 
         assertNotNull(result);
         assertEquals("Original Title", result.getTitle());

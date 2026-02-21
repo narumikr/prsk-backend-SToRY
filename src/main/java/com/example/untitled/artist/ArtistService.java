@@ -1,6 +1,8 @@
 package com.example.untitled.artist;
 
+import com.example.untitled.artist.dto.ArtistListResponse;
 import com.example.untitled.artist.dto.ArtistRequest;
+import com.example.untitled.artist.dto.ArtistResponse;
 import com.example.untitled.artist.dto.OptionalArtistRequest;
 import com.example.untitled.common.dto.ErrorDetails;
 import com.example.untitled.common.exception.DuplicationResourceException;
@@ -25,15 +27,16 @@ public class ArtistService {
     private final ArtistRepository artistRepository;
 
     @Transactional(readOnly = true)
-    public Page<Artist> getAllArtists(int page, int size, String sortBy, String direction) {
+    public ArtistListResponse getAllArtists(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC")
                 ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-        return artistRepository.findByIsDeleted(false, pageable);
+        Page<Artist> artistPage = artistRepository.findByIsDeleted(false, pageable);
+        return ArtistListResponse.from(artistPage);
     }
 
-    public Artist createArtist(ArtistRequest reqDto) {
+    public ArtistResponse createArtist(ArtistRequest reqDto) {
         artistRepository.findByArtistNameAndIsDeleted(reqDto.getArtistName(), false)
                 .ifPresent(artist -> {
                     throw new DuplicationResourceException(
@@ -50,10 +53,10 @@ public class ArtistService {
         artist.setUnitName(reqDto.getUnitName());
         artist.setContent(reqDto.getContent());
 
-        return artistRepository.save(artist);
+        return ArtistResponse.from(artistRepository.save(artist));
     }
 
-    public Artist updateArtist(Long id, OptionalArtistRequest reqDto) {
+    public ArtistResponse updateArtist(Long id, OptionalArtistRequest reqDto) {
         Artist artist = artistRepository.findByIdAndIsDeleted(id, false)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found for id: " + id));
 
@@ -74,7 +77,7 @@ public class ArtistService {
         updateIfNotNull(reqDto.getUnitName(), artist::setUnitName);
         updateIfNotNull(reqDto.getContent(), artist::setContent);
 
-        return artistRepository.save(artist);
+        return ArtistResponse.from(artistRepository.save(artist));
     }
 
     public void deleteArtist(Long id) {

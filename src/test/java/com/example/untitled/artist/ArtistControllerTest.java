@@ -1,6 +1,9 @@
 package com.example.untitled.artist;
 
+import com.example.untitled.artist.dto.ArtistListResponse;
+import com.example.untitled.artist.dto.ArtistResponse;
 import com.example.untitled.common.dto.ErrorDetails;
+import com.example.untitled.common.dto.MetaInfo;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -43,17 +46,18 @@ public class ArtistControllerTest {
         String expectedUnitName = "Test unit name";
         String expectedContent = "Test content";
 
-        Artist mockArtist = new Artist();
-        mockArtist.setId(1L);
-        mockArtist.setArtistName(expectedArtistName);
-        mockArtist.setUnitName(expectedUnitName);
-        mockArtist.setContent(expectedContent);
+        ArtistResponse mockArtistResponse = ArtistResponse.builder()
+                .id(1L)
+                .artistName(expectedArtistName)
+                .unitName(expectedUnitName)
+                .content(expectedContent)
+                .build();
 
         when(artistService.createArtist(argThat(request ->
                 request.getArtistName().equals(expectedArtistName) &&
                         request.getUnitName().equals(expectedUnitName) &&
                         request.getContent().equals(expectedContent)
-        ))).thenReturn(mockArtist);
+        ))).thenReturn(mockArtistResponse);
 
         String reqBody = """
                 {
@@ -173,7 +177,7 @@ public class ArtistControllerTest {
                 2
         );
 
-        when(artistService.getAllArtists(0, 20, "artistName", "ASC")).thenReturn(artistPage);
+        when(artistService.getAllArtists(0, 20, "artistName", "ASC")).thenReturn(ArtistListResponse.from(artistPage));
 
         mvcMock.perform(get("/artists"))
                 .andExpect(status().isOk())
@@ -222,7 +226,7 @@ public class ArtistControllerTest {
                 15
         );
 
-        when(artistService.getAllArtists(1, 10, "artistName", "ASC")).thenReturn(artistPage);
+        when(artistService.getAllArtists(1, 10, "artistName", "ASC")).thenReturn(ArtistListResponse.from(artistPage));
 
         mvcMock.perform(get("/artists")
                         .param("page", "2")
@@ -272,13 +276,14 @@ public class ArtistControllerTest {
      */
     @Test
     public void updateArtistSuccess() throws Exception {
-        Artist updatedArtist = new Artist();
-        updatedArtist.setId(1L);
-        updatedArtist.setArtistName("Updated Artist");
-        updatedArtist.setUnitName("Updated Unit");
-        updatedArtist.setContent("Updated Content");
+        ArtistResponse updatedArtistResponse = ArtistResponse.builder()
+                .id(1L)
+                .artistName("Updated Artist")
+                .unitName("Updated Unit")
+                .content("Updated Content")
+                .build();
 
-        when(artistService.updateArtist(eq(1L), any())).thenReturn(updatedArtist);
+        when(artistService.updateArtist(eq(1L), any())).thenReturn(updatedArtistResponse);
 
         String reqBody = """
                 {
@@ -306,13 +311,14 @@ public class ArtistControllerTest {
      */
     @Test
     public void updateArtistSuccess_PartialUpdate() throws Exception {
-        Artist updatedArtist = new Artist();
-        updatedArtist.setId(1L);
-        updatedArtist.setArtistName("Updated Artist");
-        updatedArtist.setUnitName("Original Unit");
-        updatedArtist.setContent("Original Content");
+        ArtistResponse updatedArtistResponse = ArtistResponse.builder()
+                .id(1L)
+                .artistName("Updated Artist")
+                .unitName("Original Unit")
+                .content("Original Content")
+                .build();
 
-        when(artistService.updateArtist(eq(1L), any())).thenReturn(updatedArtist);
+        when(artistService.updateArtist(eq(1L), any())).thenReturn(updatedArtistResponse);
 
         String reqBody = """
                 {

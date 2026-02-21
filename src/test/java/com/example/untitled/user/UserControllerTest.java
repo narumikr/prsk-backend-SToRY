@@ -3,6 +3,8 @@ package com.example.untitled.user;
 import com.example.untitled.common.dto.ErrorDetails;
 import com.example.untitled.common.exception.DuplicationResourceException;
 import com.example.untitled.common.exception.UnauthorizedException;
+import com.example.untitled.user.dto.UserListResponse;
+import com.example.untitled.user.dto.UserResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,7 @@ public class UserControllerTest {
     public void registerUserSuccess() throws Exception {
         User mockUser = createMockUser(1L, "testuser");
 
-        when(userService.createUser(any())).thenReturn(mockUser);
+        when(userService.createUser(any())).thenReturn(UserResponse.from(mockUser));
 
         String reqBody = """
                 {
@@ -157,7 +159,7 @@ public class UserControllerTest {
                 2
         );
 
-        when(userService.getAllUsers(0, 20, "userName", "ASC")).thenReturn(userPage);
+        when(userService.getAllUsers(0, 20, "userName", "ASC")).thenReturn(UserListResponse.from(userPage));
 
         mvcMock.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -192,7 +194,7 @@ public class UserControllerTest {
                 15
         );
 
-        when(userService.getAllUsers(1, 10, "userName", "ASC")).thenReturn(userPage);
+        when(userService.getAllUsers(1, 10, "userName", "ASC")).thenReturn(UserListResponse.from(userPage));
 
         mvcMock.perform(get("/users")
                         .param("page", "2")
@@ -244,7 +246,7 @@ public class UserControllerTest {
     public void updateUserSuccess() throws Exception {
         User updatedUser = createMockUser(1L, "updateduser");
 
-        when(userService.updateUser(eq(1L), any())).thenReturn(updatedUser);
+        when(userService.updateUser(eq(1L), any())).thenReturn(UserResponse.from(updatedUser));
 
         String reqBody = """
                 {
