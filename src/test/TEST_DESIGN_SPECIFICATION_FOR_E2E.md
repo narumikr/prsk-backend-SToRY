@@ -104,7 +104,7 @@ public abstract class E2ETestBase {
     protected TestRestTemplate restTemplate;
 
     protected String getBaseUrl() {
-        // TestRestTemplateはcontext-path（/btw-api/v1）を自動で付加するため空文字を返す
+        // TestRestTemplateはcontext-path（/api/v1）を自動で付加するため空文字を返す
         return "";
     }
 }
