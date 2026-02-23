@@ -19,7 +19,7 @@ public abstract class E2ETestBase {
     protected TestRestTemplate restTemplate;
 
     protected String getBaseUrl() {
-        // Returns empty string because TestRestTemplate automatically prepends the context-path (/btw-api/v1)
+        // Returns empty string because TestRestTemplate automatically prepends the context-path (/api/v1)
         return "";
     }
 }

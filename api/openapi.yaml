@@ -8,7 +8,7 @@ info:
       - アーティストマスタ管理 - Management artist master
   version: 0.1.0
 servers:
-  - url: 'http://localhost:8080/btw-api/v1'
+  - url: 'http://localhost:8080/api/v1'
     description: development
 
 # ------------------------------------------------------------------------------ #
