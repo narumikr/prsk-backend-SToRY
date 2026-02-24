@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@redocly/cli": "^2.18.1"
+    "@redocly/cli": "^2.19.1"
   },
   "scripts": {
     "doc": "rm -rf dist && bash scripts/generate-api-docs.sh"
