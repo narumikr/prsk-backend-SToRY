@@ -67,6 +67,7 @@ public class ArtistControllerTest {
                 """.formatted(expectedArtistName, expectedUnitName, expectedContent);
 
         mvcMock.perform(post("/artists")
+                .header("x-api-key", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reqBody))
                 .andExpect(status().isCreated())
@@ -91,6 +92,7 @@ public class ArtistControllerTest {
                 """;
 
         mvcMock.perform(post("/artists")
+                .header("x-api-key", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -117,6 +119,7 @@ public class ArtistControllerTest {
                 """.formatted(ngArtistName, ngUnitName, ngContent);
 
         mvcMock.perform(post("/artists")
+                .header("x-api-key", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -145,6 +148,7 @@ public class ArtistControllerTest {
             """;
 
         mvcMock.perform(post("/artists")
+                .header("x-api-key", "test-api-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reqBody))
                 .andExpect(status().isConflict())
@@ -178,7 +182,8 @@ public class ArtistControllerTest {
 
         when(artistService.getAllArtists(0, 20, "artistName", "ASC")).thenReturn(ArtistListResponse.from(artistPage));
 
-        mvcMock.perform(get("/artists"))
+        mvcMock.perform(get("/artists")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", hasSize(2)))
                 .andExpect(jsonPath("$.items[0].id").value(1))
@@ -228,6 +233,7 @@ public class ArtistControllerTest {
         when(artistService.getAllArtists(1, 10, "artistName", "ASC")).thenReturn(ArtistListResponse.from(artistPage));
 
         mvcMock.perform(get("/artists")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "2")
                         .param("limit", "10"))
                 .andExpect(status().isOk())
@@ -247,6 +253,7 @@ public class ArtistControllerTest {
     @Test
     public void getArtistsListError_withBadRequest_InvalidPage() throws Exception {
         mvcMock.perform(get("/artists")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "0")
                         .param("limit", "20"))
                 .andExpect(status().isBadRequest());
@@ -259,11 +266,13 @@ public class ArtistControllerTest {
     @Test
     public void getArtistsListError_withBadRequest_InvalidLimit() throws Exception {
         mvcMock.perform(get("/artists")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "1")
                         .param("limit", "101"))
                 .andExpect(status().isBadRequest());
 
         mvcMock.perform(get("/artists")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "1")
                         .param("limit", "0"))
                 .andExpect(status().isBadRequest());
@@ -293,6 +302,7 @@ public class ArtistControllerTest {
                 """;
 
         mvcMock.perform(put("/artists/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isOk())
@@ -326,6 +336,7 @@ public class ArtistControllerTest {
                 """;
 
         mvcMock.perform(put("/artists/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isOk())
@@ -351,6 +362,7 @@ public class ArtistControllerTest {
                 """;
 
         mvcMock.perform(put("/artists/999")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isNotFound());
@@ -373,6 +385,7 @@ public class ArtistControllerTest {
                 """.formatted(ngArtistName);
 
         mvcMock.perform(put("/artists/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -401,6 +414,7 @@ public class ArtistControllerTest {
                 """;
 
         mvcMock.perform(put("/artists/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isConflict())
@@ -423,6 +437,7 @@ public class ArtistControllerTest {
                 """;
 
         mvcMock.perform(put("/artists/0")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest());
@@ -438,7 +453,8 @@ public class ArtistControllerTest {
     public void deleteArtistSuccess() throws Exception {
         doNothing().when(artistService).deleteArtist(1L);
 
-        mvcMock.perform(delete("/artists/1"))
+        mvcMock.perform(delete("/artists/1")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isNoContent());
 
         verify(artistService, times(1)).deleteArtist(1L);
@@ -453,9 +469,53 @@ public class ArtistControllerTest {
         doThrow(new EntityNotFoundException("Artist not found for id: 999"))
                 .when(artistService).deleteArtist(999L);
 
-        mvcMock.perform(delete("/artists/999"))
+        mvcMock.perform(delete("/artists/999")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isNotFound());
 
         verify(artistService, times(1)).deleteArtist(999L);
+    }
+
+    /**
+     * POST /artists : x-api-key なしで 401 Unauthorized
+     */
+    @Test
+    public void createArtistError_withUnauthorized_NoApiKey() throws Exception {
+        String reqBody = """
+                {
+                    "artistName": "Test artist",
+                    "unitName": "Test unit name",
+                    "content": "Test content"
+                }
+                """;
+
+        mvcMock.perform(post("/artists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(reqBody))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.statusCode").value(401))
+                .andExpect(jsonPath("$.error").value("UNAUTHORIZED"));
+    }
+
+    /**
+     * POST /artists : 不正な x-api-key で 401 Unauthorized
+     */
+    @Test
+    public void createArtistError_withUnauthorized_InvalidApiKey() throws Exception {
+        String reqBody = """
+                {
+                    "artistName": "Test artist",
+                    "unitName": "Test unit name",
+                    "content": "Test content"
+                }
+                """;
+
+        mvcMock.perform(post("/artists")
+                .header("x-api-key", "wrong-key")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(reqBody))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.statusCode").value(401))
+                .andExpect(jsonPath("$.error").value("UNAUTHORIZED"));
     }
 }

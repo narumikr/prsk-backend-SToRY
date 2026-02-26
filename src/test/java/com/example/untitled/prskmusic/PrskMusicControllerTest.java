@@ -78,6 +78,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(post("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isCreated())
@@ -106,6 +107,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(post("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -138,6 +140,7 @@ public class PrskMusicControllerTest {
                 """.formatted(ngTitle, ngLyricsName, ngMusicName, ngFeaturing, ngYoutubeLink);
 
         mvcMock.perform(post("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -168,6 +171,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(post("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isConflict())
@@ -192,7 +196,8 @@ public class PrskMusicControllerTest {
 
         when(prskMusicService.getAllPrskMusic(0, 20, "title", "ASC")).thenReturn(PrskMusicListResponse.from(musicPage));
 
-        mvcMock.perform(get("/prsk-music"))
+        mvcMock.perform(get("/prsk-music")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", hasSize(2)))
                 .andExpect(jsonPath("$.items[0].id").value(1))
@@ -228,6 +233,7 @@ public class PrskMusicControllerTest {
         when(prskMusicService.getAllPrskMusic(1, 10, "title", "ASC")).thenReturn(PrskMusicListResponse.from(musicPage));
 
         mvcMock.perform(get("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "2")
                         .param("limit", "10"))
                 .andExpect(status().isOk())
@@ -247,6 +253,7 @@ public class PrskMusicControllerTest {
     @Test
     public void getPrskMusicListError_withBadRequest_InvalidPage() throws Exception {
         mvcMock.perform(get("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "0")
                         .param("limit", "20"))
                 .andExpect(status().isBadRequest());
@@ -259,11 +266,13 @@ public class PrskMusicControllerTest {
     @Test
     public void getPrskMusicListError_withBadRequest_InvalidLimit() throws Exception {
         mvcMock.perform(get("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "1")
                         .param("limit", "101"))
                 .andExpect(status().isBadRequest());
 
         mvcMock.perform(get("/prsk-music")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "1")
                         .param("limit", "0"))
                 .andExpect(status().isBadRequest());
@@ -290,6 +299,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(put("/prsk-music/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isOk())
@@ -318,6 +328,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(put("/prsk-music/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isOk())
@@ -344,6 +355,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(put("/prsk-music/999")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isNotFound());
@@ -366,6 +378,7 @@ public class PrskMusicControllerTest {
                 """.formatted(ngTitle);
 
         mvcMock.perform(put("/prsk-music/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -395,6 +408,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(put("/prsk-music/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isConflict())
@@ -417,6 +431,7 @@ public class PrskMusicControllerTest {
                 """;
 
         mvcMock.perform(put("/prsk-music/0")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest());
@@ -432,7 +447,8 @@ public class PrskMusicControllerTest {
     public void deletePrskMusicSuccess() throws Exception {
         doNothing().when(prskMusicService).deletePrskMusic(1L);
 
-        mvcMock.perform(delete("/prsk-music/1"))
+        mvcMock.perform(delete("/prsk-music/1")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isNoContent());
 
         verify(prskMusicService, times(1)).deletePrskMusic(1L);
@@ -447,7 +463,8 @@ public class PrskMusicControllerTest {
         doThrow(new EntityNotFoundException("Prsk music not found for id: 999"))
                 .when(prskMusicService).deletePrskMusic(999L);
 
-        mvcMock.perform(delete("/prsk-music/999"))
+        mvcMock.perform(delete("/prsk-music/999")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isNotFound());
 
         verify(prskMusicService, times(1)).deletePrskMusic(999L);
