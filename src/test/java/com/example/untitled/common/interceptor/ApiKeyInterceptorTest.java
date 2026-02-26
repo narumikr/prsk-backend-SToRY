@@ -61,6 +61,7 @@ class ApiKeyInterceptorTest {
 
         assertThat(result).isFalse();
         assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentType()).contains("application/json");
     }
 
     /**
