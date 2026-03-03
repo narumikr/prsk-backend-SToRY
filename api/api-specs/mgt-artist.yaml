@@ -52,6 +52,8 @@ paths:
                   - meta
         '400':
           $ref: './common.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './common.yaml#/components/responses/Unauthorized'
         '500':
           $ref: './common.yaml#/components/responses/InternalServerError'
         '503':
@@ -90,6 +92,8 @@ paths:
                       - auditInfo
         '400':
           $ref: './common.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './common.yaml#/components/responses/Unauthorized'
         '409':
           $ref: './common.yaml#/components/responses/Conflict'
         '500':
@@ -142,6 +146,8 @@ paths:
                       - auditInfo
         '400':
           $ref: './common.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './common.yaml#/components/responses/Unauthorized'
         '404':
           $ref: './common.yaml#/components/responses/NotFound'
         '409':
@@ -184,6 +190,8 @@ paths:
           description: Deleted successfully
         '400':
           $ref: './common.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './common.yaml#/components/responses/Unauthorized'
         '404':
           $ref: './common.yaml#/components/responses/NotFound'
         '500':

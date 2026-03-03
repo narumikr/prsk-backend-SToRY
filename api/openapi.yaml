@@ -42,6 +42,14 @@ tags:
         - ユーザー情報の更新 - Update user information
         - ユーザー情報の削除 - Delete user information
 
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      $ref: './api-specs/common.yaml#/components/securitySchemes/ApiKeyAuth'
+
 # ------------------------------------------------------------------------------ #
 #  Paths                                                                         #
 # ------------------------------------------------------------------------------ #

@@ -1,10 +1,12 @@
 package com.example.untitled.e2e;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -12,11 +14,24 @@ import org.springframework.test.context.ActiveProfiles;
 @Tag("e2e")
 public abstract class E2ETestBase {
 
+    private static final ClientHttpRequestInterceptor API_KEY_INTERCEPTOR =
+            (request, body, execution) -> {
+                request.getHeaders().add("x-api-key", "test-api-key");
+                return execution.execute(request, body);
+            };
+
     @LocalServerPort
     protected int port;
 
     @Autowired
     protected TestRestTemplate restTemplate;
+
+    @BeforeEach
+    void setupApiKey() {
+        if (!restTemplate.getRestTemplate().getInterceptors().contains(API_KEY_INTERCEPTOR)) {
+            restTemplate.getRestTemplate().getInterceptors().add(API_KEY_INTERCEPTOR);
+        }
+    }
 
     protected String getBaseUrl() {
         // Returns empty string because TestRestTemplate automatically prepends the context-path (/api/v1)

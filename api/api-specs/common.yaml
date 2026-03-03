@@ -213,3 +213,9 @@ components:
         minimum: 1
         maximum: 1000
         example: 20
+  # ===== Security schemes ======================================================= #
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

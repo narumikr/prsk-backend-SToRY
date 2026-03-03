@@ -63,6 +63,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(post("/users")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isCreated())
@@ -86,6 +87,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(post("/users")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -110,6 +112,7 @@ public class UserControllerTest {
                 """.formatted(ngUserName, ngPassword);
 
         mvcMock.perform(post("/users")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -137,6 +140,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(post("/users")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isConflict())
@@ -161,7 +165,8 @@ public class UserControllerTest {
 
         when(userService.getAllUsers(0, 20, "userName", "ASC")).thenReturn(UserListResponse.from(userPage));
 
-        mvcMock.perform(get("/users"))
+        mvcMock.perform(get("/users")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", hasSize(2)))
                 .andExpect(jsonPath("$.items[0].id").value(1))
@@ -197,6 +202,7 @@ public class UserControllerTest {
         when(userService.getAllUsers(1, 10, "userName", "ASC")).thenReturn(UserListResponse.from(userPage));
 
         mvcMock.perform(get("/users")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "2")
                         .param("limit", "10"))
                 .andExpect(status().isOk())
@@ -216,6 +222,7 @@ public class UserControllerTest {
     @Test
     public void getUsersListError_withBadRequest_InvalidPage() throws Exception {
         mvcMock.perform(get("/users")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "0")
                         .param("limit", "20"))
                 .andExpect(status().isBadRequest());
@@ -228,11 +235,13 @@ public class UserControllerTest {
     @Test
     public void getUsersListError_withBadRequest_InvalidLimit() throws Exception {
         mvcMock.perform(get("/users")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "1")
                         .param("limit", "101"))
                 .andExpect(status().isBadRequest());
 
         mvcMock.perform(get("/users")
+                        .header("x-api-key", "test-api-key")
                         .param("page", "1")
                         .param("limit", "0"))
                 .andExpect(status().isBadRequest());
@@ -256,6 +265,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(put("/users/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isOk())
@@ -282,6 +292,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(put("/users/999")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isNotFound());
@@ -309,6 +320,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(put("/users/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isUnauthorized())
@@ -334,6 +346,7 @@ public class UserControllerTest {
                 """.formatted(ngUserName);
 
         mvcMock.perform(put("/users/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest())
@@ -363,6 +376,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(put("/users/1")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isConflict())
@@ -386,6 +400,7 @@ public class UserControllerTest {
                 """;
 
         mvcMock.perform(put("/users/0")
+                        .header("x-api-key", "test-api-key")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqBody))
                 .andExpect(status().isBadRequest());
@@ -401,7 +416,8 @@ public class UserControllerTest {
     public void deleteUserSuccess() throws Exception {
         doNothing().when(userService).deleteUser(1L);
 
-        mvcMock.perform(delete("/users/1"))
+        mvcMock.perform(delete("/users/1")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isNoContent());
 
         verify(userService, times(1)).deleteUser(1L);
@@ -416,7 +432,8 @@ public class UserControllerTest {
         doThrow(new EntityNotFoundException("User not found for id: 999"))
                 .when(userService).deleteUser(999L);
 
-        mvcMock.perform(delete("/users/999"))
+        mvcMock.perform(delete("/users/999")
+                        .header("x-api-key", "test-api-key"))
                 .andExpect(status().isNotFound());
 
         verify(userService, times(1)).deleteUser(999L);
