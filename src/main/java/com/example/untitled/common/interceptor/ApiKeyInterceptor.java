@@ -1,16 +1,20 @@
 package com.example.untitled.common.interceptor;
 
-import com.example.untitled.common.dto.ErrorResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+
+import com.example.untitled.common.constant.ApiSecurityConstants;
+import com.example.untitled.common.dto.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class ApiKeyInterceptor implements HandlerInterceptor {
@@ -32,11 +36,16 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) throws Exception {
-        if (request.getServletPath().startsWith("/health")) {
+        if (request.getServletPath().startsWith(ApiSecurityConstants.HEALTH_PATH)) {
             return true;
         }
 
-        String providedKey = request.getHeader("x-api-key");
+        // Allow CORS preflight requests without API key
+        if (ApiSecurityConstants.OPTIONS_METHOD.equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
+        String providedKey = request.getHeader(ApiSecurityConstants.API_KEY_HEADER);
         if (providedKey == null || !MessageDigest.isEqual(
                 providedKey.getBytes(StandardCharsets.UTF_8),
                 apiKey.getBytes(StandardCharsets.UTF_8))) {
