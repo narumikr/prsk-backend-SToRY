@@ -6,17 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
-import java.io.IOException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("e2e")
 @Tag("e2e")
 public abstract class E2ETestBase {
+
+    private static final ClientHttpRequestInterceptor API_KEY_INTERCEPTOR =
+            (request, body, execution) -> {
+                request.getHeaders().add("x-api-key", "test-api-key");
+                return execution.execute(request, body);
+            };
 
     @LocalServerPort
     protected int port;
@@ -26,12 +28,9 @@ public abstract class E2ETestBase {
 
     @BeforeEach
     void setupApiKey() {
-        restTemplate.getRestTemplate().getInterceptors().add(
-                (request, body, execution) -> {
-                    request.getHeaders().add("x-api-key", "test-api-key");
-                    return execution.execute(request, body);
-                }
-        );
+        if (!restTemplate.getRestTemplate().getInterceptors().contains(API_KEY_INTERCEPTOR)) {
+            restTemplate.getRestTemplate().getInterceptors().add(API_KEY_INTERCEPTOR);
+        }
     }
 
     protected String getBaseUrl() {
