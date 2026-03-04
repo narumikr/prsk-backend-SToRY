@@ -54,6 +54,48 @@ configurations {
     e2eTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
+// Docker tasks for development
+tasks.register('dockerComposeDevUp', Exec) {
+    description = 'Starts PostgreSQL container for development'
+    group = 'docker'
+    commandLine 'docker', 'compose', '-f', 'docker-compose.dev.yml', 'up', '-d'
+    doLast {
+        println 'Waiting for PostgreSQL (dev) to be ready...'
+        def maxAttempts = 30
+        def attempt = 0
+        while (attempt < maxAttempts) {
+            try {
+                def result = exec {
+                    commandLine 'docker', 'exec', 'prsk-dev-db', 'pg_isready', '-U', 'postgres', '-d', 'postgres'
+                    ignoreExitValue = true
+                }
+                if (result.exitValue == 0) {
+                    println 'PostgreSQL (dev) is ready!'
+                    break
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+            attempt++
+            Thread.sleep(1000)
+        }
+        if (attempt >= maxAttempts) {
+            throw new GradleException('PostgreSQL (dev) failed to start within timeout')
+        }
+    }
+}
+
+tasks.register('dockerComposeDevDown', Exec) {
+    description = 'Stops PostgreSQL container for development'
+    group = 'docker'
+    commandLine 'docker', 'compose', '-f', 'docker-compose.dev.yml', 'down'
+}
+
+bootRun {
+    dependsOn 'dockerComposeDevUp'
+    systemProperty 'spring.profiles.active', 'dev'
+}
+
 // Docker tasks for E2E tests
 tasks.register('dockerComposeUp', Exec) {
     description = 'Starts PostgreSQL container for E2E tests'
