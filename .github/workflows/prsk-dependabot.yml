@@ -6,13 +6,12 @@ on:
 
 permissions:
   pull-requests: write
-  contents: read
 
 jobs:
   rename-dependabot-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Rename dependabot PR with prsk
-        uses: Narumikr/link-sekai-actions/prsk-dependabot@v3
+        uses: narumikr/link-sekai-actions/prsk-dependabot@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
